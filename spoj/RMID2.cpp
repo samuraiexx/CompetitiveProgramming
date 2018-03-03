@@ -4,7 +4,8 @@ using namespace std;
 int main(){
   cin.tie(0), ios_base::sync_with_stdio(0); // Para quem usar CIN e COUT, em questoes com tempo
                                             //apertado, precisa escrever esses dois comando no
-                                            //inicio e usar '\n' em vez de endl
+                                            //inicio e usar '\n' em vez de endl ou usa scanf
+                                            //e printf
   int t;
   cin >> t;
   for(int i = 0; i < t; i++){
