@@ -2,23 +2,32 @@
 using namespace std;
 
 int main(){
-  multiset<int> l, r;
-  int n;
-  while(cin >> n, n){
-    auto rit = r.begin();
-    auto lit = l.end();
-    if(n == -1){ lit--,cout << *lit << endl; continue; }
+  cin.tie(0), ios_base::sync_with_stdio(0); // Para quem usar CIN e COUT, em questoes com tempo
+                                            //apertado, precisa escrever esses dois comando no
+                                            //inicio e usar '\n' em vez de endl
+  int t;
+  cin >> t;
+  for(int i = 0; i < t; i++){
+    int x;
+    priority_queue<int> left, right; // ambas tem o maior elemento inserido no top(), mas como
+                                     // nós precisamos do menor na direita, basta fazer x = -x
+                                     // quando for inserir e remover
+    while(cin >> x, x){ // 'igual' a while(n), a ultima condicao separada por vigulas é a verificada
+      if(x == -1){ // mostra o maior elemento da esquerda e deleta
+        cout << left.top() << '\n';
+        left.pop();
+      } else {  // Ve se o elemento deve ir para a direita ou para a esquerda
+        if(right.size() and x >= -right.top()) right.push(-x);
+        else left.push(x);
+      }
 
-    if(l.size() <= r.size()) l.insert(n);
-    else r.insert(n);
+      if(left.size() < right.size())
+        left.push(-right.top()), right.pop();
 
-    rit = r.begin();
-    lit = l.end(); lit--;
-
-    if(n == -1){ cout << *lit << endl; continue; }
-
-    if(r.size())
-      if(*rit < *lit) r.insert(*lit), l.erase(lit),
-                      l.insert(*rit), r.erase(rit);
+      else if(left.size() > right.size() + 1)
+        right.push(-left.top()), left.pop();
+    }
+    cout << '\n';
   }
+  return 0;
 }
