@@ -1,29 +1,122 @@
-#include <bits/stdc++.h>
-#include <math.h>
+/*
+   ENTRADA
+   7 8 9
+   21 33 33 18 42 22 26
+   1 2
+   1 3
+   2 5
+   3 5
+   3 6
+   4 6
+   4 7
+   6 7
+   P 7
+   T 4 2
+   P 7
+   P 5
+   T 1 4
+   P 7
+   T 4 7
+   P 2
+   P 6
+
+   SAIDA
+   18
+   21
+   18
+   18
+ *
+ 26
+ */
+
+#include<bits/stdc++.h>
 #define db(x) cerr << #x << " = " << x << endl
-#define _ << ", " << 
+#define _ << " , " << 
 using namespace std;
-int main()
-{
-  double PI=3.14159;
-  double g=9.80665;
-  int p1,p2,n;
-  double h,vel,angulo,rad,alcance;
+typedef long long ll;
 
-  scanf("%lf",&h);
-  scanf("%d %d",&p1,&p2);
-  scanf("%d",&n);
-  while (n--)
-  {
-    scanf("%lf %lf",&angulo,&vel);
+int N, M, I, E, a, b;
+int age[501], pos[501];
+int vis[500];
+vector<int> arestas[501];
 
-    rad=angulo*PI/180;
-    db(angulo _ PI _ rad);
-    alcance = vel*cos(rad)/g*(vel*sin(rad)+sqrt(vel*vel*sin(rad)*sin(rad)+2*g*h));
-    printf("%lf\n",rad);
-    if (alcance<p2 && alcance>p1)
-      printf("%.5lf -> DUCK\n",alcance);
-    else
-      printf("%.5lf -> NUCK\n",alcance);
+void mostrar_grafo() {
+  printf("GRAFO\n");
+  for(int i=1; i<=N; i++){
+    printf("%d -> ",i);
+    for(auto v : arestas[i]) printf("%d ",v);
+    printf("\n");
   }
+}
+
+void mostar_posicoes() {
+  printf("POSICOES\n");
+  for (int i = 1; i <= N; i++) printf("%d -> %d\n",i,pos[i]);
+}
+void mostar_ages() {
+  printf("AGES\n");
+  for (int i = 1; i <= N; i++) printf("%d -> %d\n",i,age[i]);
+}
+
+int dfs(int x){
+  if(vis[x]) return vis[x];
+  int min_x=age[x];
+  for (auto v : arestas[x]){
+    min_x=min(min_x,dfs(v));
+  }
+  return vis[x] = min_x;
+}
+
+void trocar(int a, int b){
+  swap(pos[a],pos[b]);
+  swap(age[pos[a]],age[pos[b]]);
+}
+
+int main() {
+  char op;
+  while(scanf("%d%d%d",&N,&M,&I)!=EOF){        
+    for (int i = 1; i <= N; i++) {
+      scanf("%d",&age[i]);
+      pos[i]=i;
+    }
+
+    for (int i = 1; i <= M; i++) {
+      int x, y;
+      scanf("%d%d",&x,&y); // x gerencia y
+      arestas[y].push_back(x);
+    }
+
+    //mostrar_grafo();
+    //mostar_posicoes();
+    //mostar_ages();
+
+    for (int i = 1; i <= I; i++) {
+      scanf("%d",&a);
+      scanf("%c%d",&op,&a);
+
+      if (op == 'T') {
+        scanf("%d",&b);
+        //printf("Trocar %d com %d\n",a,b);
+        trocar(a,b);
+      } else if (op == 'P') {
+        E = a;
+        //printf("Procurar gerente mais novo de %d\n",E);
+
+        if(arestas[pos[E]].empty()) printf("*\n");
+        else {
+          for(int i = 0; i <= N; i++) vis[i] = 0;
+          int min_x = 1e9;
+          for (auto v : arestas[pos[E]]) min_x = min(min_x,dfs(v));
+          //printf("Gerente mais novo de %d -> %d\n",E,min_x);
+          printf("%d\n",min_x);
+        }
+      }
+      //mostar_posicoes();
+      //mostar_ages();
+    }
+
+    for (int x=1 ; x <= N; x++)
+      arestas[x].clear();
+  }
+  return 0;
 }

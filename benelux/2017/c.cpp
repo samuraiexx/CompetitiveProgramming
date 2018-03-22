@@ -8,22 +8,26 @@ typedef long double ld;
 #define db(x) cerr << #x << " = " << x << endl;
 #define _ << ", " << 
 const int N = 5e5 + 5;
-int v[N];
+ll v[N];
 
 ll gcd(ll a, ll b) { return b ? gcd(b, a%b) : a; }
 
 int main(){
+  cin.tie(0), ios_base::sync_with_stdio(0);
   int n;
+  set<ll> ans, gcdi;
   cin >> n;
-  set<int> gcds;
   for(int i = 0; i < n; i++) cin >> v[i];
 
   for(int i = 0; i < n; i++){
-    ll gc = v[i];
-    gcds.insert(gc);
-    for(int j = i + 1; j < n and gc != 1; j++)
-      gc = gcd(gc, v[j]), gcds.insert(gc);
+    set<ll> gcdii;
+    if(i > 0) for(auto a : gcdi)
+      gcdii.insert(gcd(a, v[i])), ans.insert(gcd(a, v[i]));
+    gcdii.insert(v[i]);
+    ans.insert(v[i]);
+
+    gcdi = gcdii;
   }
 
-  cout << gcds.size() << endl;
+  cout << ans.size() << endl;
 }

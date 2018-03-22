@@ -1,49 +1,42 @@
 #include<bits/stdc++.h>
 using namespace std;
-const int N = 2e5 + 5;
-
 #define db(x) cerr << #x << " = " << x << endl;
 #define _ << ", " <<
+typedef long long ll;
 
-int v[N], tmp[N];
+const ll N = 2e5 + 5;
+ll v[N], tmp[N];
 
-int merge_sort(int l, int r){
+ll merge_sort(ll l, ll r){
   if(l == r) return 0;
+  ll mid = (l + r)/2;
+  
+  ll inv = merge_sort(l, mid) + merge_sort(mid + 1, r);
 
-  int inv = 0;
-  int mid = (l + r)/2;
-  inv = merge_sort(l, mid) + merge_sort(mid + 1, r);
-
-  int i = l, j = mid + 1;
-  int k = 0;
-
-  while(i <= mid and j <= r){
-    if(j > r) tmp[k] = v[i], i++;
-    else if(i > mid) tmp[k] = v[j], j++;
-    else if(v[i] < v[j]) tmp[k] = v[i], i++;
-    else tmp[k] = v[j], j++, inv += mid - i + 1;
-    k++;
+  ll k = 0;
+  ll i = l, j = mid + 1;
+  while(i <= mid or j <= r){
+    if(i > mid) tmp[k++] = v[j++];
+    else if(j > r or v[i] <= v[j]) tmp[k++] = v[i++];
+    else tmp[k++] = v[j++], inv += mid - i + 1;
   }
 
-  for(int i = l; i <= r; i++)
-    cout << v[i] << ' ';
-  cout << endl;
-
-  for(int i = 0; i < k; i++)
+  for(ll i = 0; i < k; i++)
     v[l + i] = tmp[i];
 
   return inv;
 }
 
 int main(){
-  int t;
-  scanf("%d", &t);
-  for(int i = 0; i < t; i++){
-    int n;
-    scanf("%d", &n);
-    for(int i = 0; i < n; i++)
-      scanf("%d", &v[i]);
-
-    printf("%d\n", merge_sort(0, n - 1));
+  cin.tie(0), ios_base::sync_with_stdio(0);
+  ll t;
+  cin >> t;
+  for(ll i = 0; i < t; i++){
+    ll n;
+    cin >> n;
+    for(ll i = 0; i < n; i++)
+      cin >> v[i];
+    
+    cout << merge_sort(0, n-1) << '\n';
   }
 }
