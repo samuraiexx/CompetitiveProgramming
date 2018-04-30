@@ -8,14 +8,17 @@ using namespace std;
 typedef long long ll;
 
 int main(){
-  int n, a, b, c, t;
-  cin >> n >> a >> b >> c >> t;
-  int ans = 0;
+  string st, nd;
+  int n;
+  cin >> st >> nd >> n;
+
+  cout << st << ' ' << nd << endl;
   for(int i = 0; i < n; i++){
-    int x;
-    cin >> x;
-    if(b > c) ans += a;
-    else ans += (c - b)*(t - x) + a;
+    string m, r;
+    cin >> m >> r;
+    if(st == m) st = r;
+    else nd = r;
+
+    cout << st << ' ' << nd << endl;
   }
-  cout << ans << endl;
 }
