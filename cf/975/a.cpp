@@ -8,14 +8,15 @@ using namespace std;
 typedef long long ll;
 
 int main(){
-  int n, a, b, c, t;
-  cin >> n >> a >> b >> c >> t;
-  int ans = 0;
+  int n;
+  map<set<char>, int> m;
+  cin >> n;
   for(int i = 0; i < n; i++){
-    int x;
-    cin >> x;
-    if(b > c) ans += a;
-    else ans += (c - b)*(t - x) + a;
+    string s;
+    cin >> s;
+    set<char> l;
+    for(auto c : s) l.insert(c);
+    m[l]++;
   }
-  cout << ans << endl;
+  cout << m.size() << endl;
 }
