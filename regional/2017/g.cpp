@@ -4,9 +4,9 @@ using namespace std;
 #define st first
 #define nd second
 #define db(x) cerr << #x << " = " << x << endl;
-#define _ << ", " << 
+#define _ << ", " <<
 typedef long long ll;
-const int mod = 1e9 + 5;
+const ll mod = 1e9 + 7;
 const int N = 1e5 + 5;
 
 pair<int, int> ch[N];
@@ -15,7 +15,7 @@ int st[N];
 int cnt[N];
 
 pair<ll, ll> dfs(int n){ // # of ways to return {false, true}
-  if(n == 0) return {1, 1};
+  if(n == 0) return w[n] = {1, 1};
   auto p1 = dfs(ch[n].st);
   auto p2 = dfs(ch[n].nd);
 
@@ -34,9 +34,13 @@ pair<ll, ll> dfs2(int n){  // # of ways it should return {false, true} but doesn
   auto sh1 = w[ch[n].st];
   auto sh2 = w[ch[n].nd];
 
-  return {fr1.nd*sh2.nd + fr2.nd*sh1.nd - fr1.nd*fr2.nd,
-          
-         };
+  pair<ll, ll> ans =  
+         {(mod + fr1.nd*sh2.nd + fr2.nd*sh1.nd - (fr1.nd*fr2.nd)%mod)%mod,
+          (fr1.st*((mod + sh2.nd - fr2.nd)%mod) +
+           fr2.st*((mod + sh1.nd - fr1.nd)%mod) +
+           fr1.st*fr2.st)%mod };
+
+  return ans;
 }
 
 int main(){
@@ -48,11 +52,8 @@ int main(){
     cin >> ch[i].st >> ch[i].nd >> st[i];
     cnt[ch[i].st]++, cnt[ch[i].nd]++;
   }
-  int rt;
-  for(int i = 0; i < n; i++)
-    if(cnt[i] == 0) rt = i;
 
-  dfs(rt);
-  auto p = dfs2(rt);
-  cout << p.st + p.nd << '\n';
+  dfs(1);
+  auto p = dfs2(1);
+  cout << (p.st + p.nd)%mod << '\n';
 }
