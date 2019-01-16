@@ -8,13 +8,7 @@ using namespace std;
 typedef long long ll;
 
 int main(){
-  freopen("lazy.in", "r", stdin);
+  cin.tie(0), ios_base::sync_with_stdio(false);
 
-  int t;
-  cin >> t;
-  for(int i = 1; i <= t; i++){
-    int x;
-    cin >> x;
-    cout << "Case " << i << ": " << x - 1  << endl;
-  }
+  
 }
