@@ -9,74 +9,49 @@ typedef long long ll;
 
 const int N = 2e5 + 5;
 
-// 2-SAT - O(V+E)
-// For each variable x, we create two nodes in the graph: u and !u
-// If the variable has index i, the index of u and !u are: 2*i and 2*i+1
-int ans[N], cn, vis[N], sccn, scc[N], scch[N];
-vector<int> stk, adj[N], radj[N];
+// Tarjan for SCC and Edge Biconnected Componentes - O(n + m)
+vector<int> adj[N];
+stack<int> st;
+bool inSt[N];
 
-void koj(int u) {
-  vis[u] = 1;
-  for (int v : adj[u]) if (!vis[v]) koj(v);
-  stk.pb(u);
+int id[N], cmp[N];
+int cnt, cmpCnt;
+
+void add(int u, int v){
+  adj[u].pb(v);
+  adj[v^1].pb(u^1);
 }
 
-void rkoj(int u) {
-  vis[u] = 0;
-  for (int v : radj[u]) if (vis[v]) rkoj(v);
-  scc[u] = sccn;
-}
+int tarjan(int n){
+  if(id[n]) return -1;
+  int low;
+  id[n] = low = ++cnt;
+  st.push(n), inSt[n] = true;
 
-void rsat(int);
-
-void sat(int u) {
-  if (ans[u] != -1) return;
-  ans[u] = 1, rsat(u^1);
-  for (int v : adj[u]) sat(v);
-}
-
-void rsat(int u) {
-  if (ans[u] != -1) return;
-  ans[u] = 0, sat(u^1);
-  for (int v : radj[u]) rsat(v);
-}
-
-bool sat() {
-  sccn = 1; // Kosaraju's
-  for (int i = 2; i <= cn; i++) if (!vis[i]) koj(i);
-  while (stk.size()) {
-    int u = stk.back(); stk.pop_back();
-    if (vis[u]) rkoj(u), scch[sccn++] = u;
+  for(auto x : adj[n]){
+    if(id[x] and inSt[x]) low = min(low, id[x]);
+    else if(!id[x]) {
+      int lowx = tarjan(x);
+      if(inSt[x])
+        low = min(low, lowx);
+    }
   }
 
-  // Checks if exists a valid assingment.
-  for (int i = 2; i <= cn; i+=2) if (scc[i] == scc[i^1]) return 0;
+  if(low == id[n]){
+    while(st.size()){
+      int x = st.top();
+      inSt[x] = false;
+      cmp[x] = cmpCnt;
 
-  memset(ans, -1, sizeof ans);
-  // To set value of x to true (or false) call sat(x) (or sat(x^1)) below.
-
-  // Finds a valid assignment. Erase if not needed.
-  for(int i = sccn - 1; i > 0; --i) sat(scch[i]);
-
-  // Check for inconsistencies in implication graph.
-  for (int u = 2; u <= cn; u++) if (ans[u] == 1)
-    for (int v : adj[u]) if (!ans[v]) return 0;
-
-  return 1;
+      st.pop();
+      if(x == n) break;
+    }
+    cmpCnt++;
+  }
+  return low;
 }
 
-void add_clause(int x, int y) {
-  cn = max(cn, max(x|1, y|1));
-  adj[x].pb(y),  adj[y^1].pb(x^1);
-  radj[y].pb(x), radj[x^1].pb(y^1);
-}
-
-void reset() {
-  memset(ans, -1, sizeof ans);
-  for(int i=0; i<=cn; ++i) adj[i].clear(), radj[i].clear();
-  cn = 0;
-}
-
+// End of tarjan
 
 vector<int> sw[N];
 bool state[N];
@@ -96,14 +71,21 @@ int main(){
   }
 
   for(int i = 1; i <= n; i++){
-    if(state[i]) //unclocked
-      add_clause(2*sw[i][0], 2*sw[i][1]),
-      add_clause(2*sw[i][0] + 1, 2*sw[i][1] + 1);
-    else
-      add_clause(2*sw[i][0], 2*sw[i][1] + 1),
-      add_clause(2*sw[i][0] + 1, 2*sw[i][1]);
+    if(state[i]) { //unclocked
+      add(2*sw[i][0], 2*sw[i][1]);
+      add(2*sw[i][0] + 1, 2*sw[i][1] + 1);
+    } else {
+      add(2*sw[i][0], 2*sw[i][1] + 1);
+      add(2*sw[i][0] + 1, 2*sw[i][1]);
+    }
   }
 
-  if(sat()) cout << "YES" << endl;
-  else cout << "NO" << endl;
+  bool sat = true;
+  for(int i = 0; i < m; i++){
+    tarjan(2*i);
+    tarjan(2*i + 1);
+    if(cmp[2*i] == cmp[2*i + 1]) sat = false;
+  }
+
+  cout << (sat ? "YES" : "NO") << endl;
 }
